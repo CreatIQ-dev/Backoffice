@@ -1,0 +1,40 @@
+.card {
+  @apply bg-white rounded-[2rem] dark:bg-gray-800;
+}
+
+.card-border {
+  @apply border border-gray-200 dark:border-gray-700;
+}
+
+.card-shadow {
+  @apply shadow-sm border border-gray-100 dark:border-gray-700;
+}
+
+.card-header-border {
+  @apply border-b border-gray-200 dark:border-gray-700;
+}
+
+.card-header-extra {
+  @apply flex justify-between items-center;
+}
+
+.card-footer {
+  @apply rounded-b-2xl;
+}
+
+.card-footer-border {
+  @apply border-t border-gray-300 dark:border-gray-600;
+}
+
+.card-header,
+.card-footer {
+  @apply py-3 px-5;
+}
+
+.card-body {
+  @apply p-5;
+}
+
+.card-gutterless {
+  @apply p-0;
+}

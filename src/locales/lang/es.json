@@ -1,0 +1,20 @@
+{
+    "nav": {
+        "home": "Inicio",
+        "singleMenuItem": "Elemento de menú único",
+        "collapseMenu": {
+            "collapseMenu": "Elemento de menú desplegable",
+            "item1": "Elemento de menú desplegable 1",
+            "item2": "Elemento de menú desplegable 2"
+        },
+        "groupMenu": {
+            "groupMenu": "Menú de grupo",
+            "single": "Elemento de menú único de grupo",
+            "collapse": {
+                "collapse": "Menú desplegable de grupo",
+                "item1": "Elemento de menú desplegable de grupo 1",
+                "item2": "Elemento de menú desplegable de grupo 2"
+            }
+        }
+    }
+}

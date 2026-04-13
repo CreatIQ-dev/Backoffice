@@ -1,0 +1,27 @@
+.menu-title {
+  @apply uppercase font-semibold text-xs tracking-wider px-4 mt-6 mb-3;
+
+  &.menu-title-light {
+    @apply text-gray-400;
+  }
+
+  &.menu-title-dark {
+    @apply text-gray-500;
+  }
+
+  &.menu-title-themed {
+    @apply text-gray-100 text-opacity-50;
+  }
+}
+
+.menu-light {
+  @apply bg-transparent;
+}
+
+.menu-dark {
+  @apply bg-gray-800;
+}
+
+.menu-transparent {
+  @apply bg-transparent;
+}
