@@ -42,16 +42,23 @@ function useAuth() {
 
             if (resp.data && resp.data.token) {
                 const { token, user: userData } = resp.data
+                const authority = userData?.authority || ['USER']
+
+                if (!authority.includes('ADMIN')) {
+                    return {
+                        status: 'failed',
+                        message: 'Access denied. Only administrators are allowed to log in.',
+                    }
+                }
+
                 dispatch(signInSuccess(token))
 
                 const user = {
                     avatar: userData?.avatar || '',
                     userName: userData?.userName || 'Anonymous',
-                    authority: userData?.authority || ['USER'],
+                    authority: authority,
                     email: userData?.email || '',
                     invites: [],
-                    onboardingSeen: userData?.onboardingSeen,
-                    pluginVersion: userData?.pluginVersion,
                     credits: userData?.credits ?? 0,
                 }
 
@@ -64,10 +71,7 @@ function useAuth() {
                 localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, token)
 
                 const redirectUrl =
-                    query.get(REDIRECT_URL_KEY) ||
-                    (user.onboardingSeen
-                        ? appConfig.authenticatedEntryPath
-                        : '/onboarding')
+                    query.get(REDIRECT_URL_KEY) || appConfig.authenticatedEntryPath
                 navigate(redirectUrl)
 
                 return {
@@ -96,18 +100,25 @@ function useAuth() {
             const resp = await apiSignUp(values)
             if (resp.data) {
                 if (resp.data.token) {
-                    const { token } = resp.data
+                    const { token, user: userData } = resp.data
+                    const authority = userData?.authority || ['USER']
+
+                    if (!authority.includes('ADMIN')) {
+                        return {
+                            status: 'failed',
+                            message: 'Registration successful, but access is restricted to administrators only.',
+                        }
+                    }
+
                     dispatch(signInSuccess(token))
-                    if (resp.data.user) {
+                    if (userData) {
                         const user = {
-                            avatar: resp.data.user?.avatar || '',
-                            userName: resp.data.user?.userName || 'Anonymous',
-                            authority: resp.data.user?.authority || ['USER'],
-                            email: resp.data.user?.email || '',
+                            avatar: userData?.avatar || '',
+                            userName: userData?.userName || 'Anonymous',
+                            authority: authority,
+                            email: userData?.email || '',
                             invites: [],
-                            onboardingSeen: resp.data.user?.onboardingSeen,
-                            pluginVersion: resp.data.user?.pluginVersion,
-                            credits: resp.data.user?.credits ?? 0,
+                            credits: userData?.credits ?? 0,
                         }
                         dispatch(setUser(user))
                     }
@@ -115,9 +126,7 @@ function useAuth() {
                     navigate(
                         redirectUrl
                             ? redirectUrl
-                            : resp.data.user?.onboardingSeen
-                              ? appConfig.authenticatedEntryPath
-                              : '/onboarding',
+                            : appConfig.authenticatedEntryPath,
                     )
                     return {
                         status: 'success',
@@ -173,13 +182,13 @@ function useAuth() {
             const resp = await apiGetUserProfile()
             if (resp.data?.ok && resp.data.usuario) {
                 const { usuario } = resp.data
+                const authority = [usuario.rol || 'USER']
                 const user = {
                     userName: usuario.nombre,
                     email: usuario.email,
-                    authority: [usuario.rol || 'USER'],
+                    authority: authority,
                     avatar: usuario.img || '',
                     credits: usuario.creditos ?? 0,
-                    onboardingSeen: usuario.onboardingSeen,
                 }
                 dispatch(setUser(user))
                 localStorage.setItem(

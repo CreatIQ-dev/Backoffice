@@ -66,6 +66,7 @@ const navigationIcon: NavigationIcons = {
     billing: <HiOutlineBanknotes />,
     qcHistory: <HiOutlineVideoCamera />,
     analytics: <HiOutlineChartBar />,
+    platformSpecs: <HiOutlineCog8Tooth />,
 }
 
 export default navigationIcon

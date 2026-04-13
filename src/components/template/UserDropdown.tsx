@@ -22,17 +22,11 @@ const dropdownItemList: DropdownList[] = [
         path: '/profile',
         icon: <HiOutlineUser />,
     },
-    {
-        label: 'Billing & Credits',
-        path: '/billing',
-        icon: <HiOutlineBanknotes />,
-    },
 ]
 
 const _UserDropdown = ({ className }: CommonProps) => {
-    const { signOut, getProfile, updateCredits } = useAuth()
+    const { signOut, getProfile } = useAuth()
     const {
-        credits,
         userName: reduxName,
         email: reduxEmail,
         authority,
@@ -50,8 +44,7 @@ const _UserDropdown = ({ className }: CommonProps) => {
     const userName = reduxName || user?.nombre || user?.name || 'User'
     const userLastName = user?.apellido || ''
     const userEmail = reduxEmail || user?.email || ''
-    const userRole = authority?.join(', ') || user?.role || 'Creative'
-    const userCredits = credits ?? user?.credits ?? 0
+    const userRole = authority?.join(', ') || user?.role || 'ADMIN'
 
     const UserAvatar = (
         <div
@@ -106,13 +99,6 @@ const _UserDropdown = ({ className }: CommonProps) => {
                             </div>
                             <div className="text-xs text-muted-foreground">
                                 {userEmail}
-                            </div>
-                            <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-green-500/20 text-green-500 border border-green-500/50">
-                                {Number(userCredits).toLocaleString(undefined, {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2,
-                                })}{' '}
-                                Credits
                             </div>
                         </div>
                     </div>

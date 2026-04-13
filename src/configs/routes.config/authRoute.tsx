@@ -9,12 +9,6 @@ const authRoute: Routes = [
         authority: [],
     },
     {
-        key: 'signUp',
-        path: `/sign-up`,
-        component: lazy(() => import('@/views/auth/SignUp/SignUp')),
-        authority: [],
-    },
-    {
         key: 'forgotPassword',
         path: `/forgot-password`,
         component: lazy(() => import('@/views/auth/ForgotPassword')),
@@ -24,18 +18,6 @@ const authRoute: Routes = [
         key: 'resetPassword',
         path: `/reset-password`,
         component: lazy(() => import('@/views/auth/ResetPassword')),
-        authority: [],
-    },
-    {
-        key: 'pluginConnect',
-        path: `/plugin-connect`,
-        component: lazy(() => import('@/views/auth/PluginConnect')),
-        authority: [],
-    },
-    {
-        key: 'pluginAuthSync',
-        path: `/plugin-auth-sync`,
-        component: lazy(() => import('@/views/auth/PluginAuthSync')),
         authority: [],
     },
     {

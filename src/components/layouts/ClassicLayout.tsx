@@ -4,7 +4,6 @@ import SidePanel from '@/components/template/SidePanel'
 import MobileNav from '@/components/template/MobileNav'
 import UserDropdown from '@/components/template/UserDropdown'
 import SideNav from '@/components/template/SideNav'
-import FrameioStatus from '@/components/template/FrameioStatus'
 import View from '@/views'
 
 const HeaderActionsStart = () => {
@@ -19,7 +18,6 @@ const HeaderActionsStart = () => {
 const HeaderActionsEnd = () => {
     return (
         <div className="flex items-center gap-4">
-            <FrameioStatus />
             <div className="flex gap-2 items-center">
                 <SidePanel />
                 <UserDropdown hoverable={false} />

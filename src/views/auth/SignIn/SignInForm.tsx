@@ -39,7 +39,6 @@ const SignInForm = (props: SignInFormProps) => {
         disableSubmit = false,
         className,
         forgotPasswordUrl = '/forgot-password',
-        signUpUrl = '/sign-up',
     } = props
 
     const [message, setMessage] = useTimeOutMessage()
@@ -61,15 +60,6 @@ const SignInForm = (props: SignInFormProps) => {
         }
 
         setSubmitting(false)
-    }
-
-    const onGoogleSignIn = () => {
-        toast.push(
-            <Notification title="Soon" type="info">
-                Google Login is coming soon.
-            </Notification>,
-            { placement: 'top-center' },
-        )
     }
 
     return (
@@ -127,6 +117,7 @@ const SignInForm = (props: SignInFormProps) => {
                                     name="password"
                                     placeholder="Password"
                                     component={PasswordInput}
+                                    type="password"
                                 />
                             </FormItem>
                             <div className="flex justify-between mb-6">
@@ -152,30 +143,6 @@ const SignInForm = (props: SignInFormProps) => {
                             >
                                 {isSubmitting ? 'Signing in...' : 'Sign In'}
                             </Button>
-
-                            <div className="mt-4 flex items-center">
-                                <div className="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
-                                <span className="mx-4 text-gray-400 text-xs uppercase tracking-wider font-semibold">
-                                    Or
-                                </span>
-                                <div className="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
-                            </div>
-
-                            <Button
-                                block
-                                className="mt-4"
-                                variant="default"
-                                type="button"
-                                icon={<FcGoogle />}
-                                onClick={() => onGoogleSignIn()}
-                            >
-                                Continue with Google
-                            </Button>
-
-                            <div className="mt-4 text-center">
-                                <span>Don't have an account? </span>
-                                <ActionLink to={signUpUrl}>Sign Up</ActionLink>
-                            </div>
                         </FormContainer>
                     </Form>
                 )}

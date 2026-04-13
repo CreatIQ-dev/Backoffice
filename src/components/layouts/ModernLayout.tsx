@@ -3,7 +3,6 @@ import SidePanel from '@/components/template/SidePanel/SidePanel'
 import UserDropdown from '@/components/template/UserDropdown'
 import MobileNav from '@/components/template/MobileNav'
 import SideNav from '@/components/template/SideNav'
-import FrameioStatus from '@/components/template/FrameioStatus'
 import View from '@/views'
 import { HiOutlineEnvelope, HiOutlineBell } from 'react-icons/hi2'
 
@@ -18,7 +17,6 @@ const HeaderActionsStart = () => {
 const HeaderActionsEnd = () => {
     return (
         <div className="flex items-center gap-4">
-            <FrameioStatus />
             <div className="flex items-center gap-2">
                 <button className="header-action-item border-muted header-action-item-hoverable">
                     <HiOutlineEnvelope className="text-xl" />
