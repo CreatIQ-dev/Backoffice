@@ -53,3 +53,18 @@ export async function apiUpdatePlatformSpec(id: string, data: Partial<Spec>) {
         data,
     })
 }
+
+export async function apiCreatePlatformSpec(data: Partial<Spec>) {
+    return ApiService.fetchData<{ ok: boolean; spec: Spec }>({
+        url: `/api/platform-specs`,
+        method: 'post',
+        data,
+    })
+}
+
+export async function apiDeletePlatformSpec(id: string) {
+    return ApiService.fetchData<{ ok: boolean; msg?: string }>({
+        url: `/api/platform-specs/${id}`,
+        method: 'delete',
+    })
+}

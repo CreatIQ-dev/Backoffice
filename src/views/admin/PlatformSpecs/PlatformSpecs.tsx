@@ -12,8 +12,8 @@ import {
     Spinner,
     Checkbox
 } from '@/components/ui'
-import { apiGetPlatformSpecs, apiUpdatePlatformSpec, Spec } from '@/services/SpecsService'
-import { HiOutlinePencil, HiOutlineRefresh } from 'react-icons/hi'
+import { apiGetPlatformSpecs, apiUpdatePlatformSpec, apiCreatePlatformSpec, apiDeletePlatformSpec, Spec } from '@/services/SpecsService'
+import { HiOutlinePencil, HiOutlineRefresh, HiOutlinePlus, HiOutlineTrash } from 'react-icons/hi'
 import { Formik, Field, Form } from 'formik'
 import * as Yup from 'yup'
 
@@ -29,6 +29,7 @@ const PlatformSpecs = () => {
     const [loading, setLoading] = useState(true)
     const [editingSpec, setEditingSpec] = useState<Spec | null>(null)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [isCreating, setIsCreating] = useState(false)
 
     const fetchSpecs = async () => {
         setLoading(true)
@@ -52,31 +53,46 @@ const PlatformSpecs = () => {
     }, [])
 
     const onEditClick = (spec: Spec) => {
+        setIsCreating(false)
         setEditingSpec(spec)
+        setIsDialogOpen(true)
+    }
+
+    const onAddClick = () => {
+        setIsCreating(true)
+        setEditingSpec(null)
         setIsDialogOpen(true)
     }
 
     const onDialogClose = () => {
         setIsDialogOpen(false)
         setEditingSpec(null)
+        setIsCreating(false)
+    }
+
+    const onDeleteClick = async (spec: Spec) => {
+        if (window.confirm(`Are you sure you want to delete the platform spec "${spec.name}"?`)) {
+            const id = spec._id || spec.id;
+            if (!id) return;
+            try {
+                const resp = await apiDeletePlatformSpec(id);
+                if (resp.data.ok || resp.status === 200) {
+                    toast.push(
+                        <Notification title="Success" type="success">
+                            Platform deleted successfully
+                        </Notification>,
+                        { placement: 'top-center' }
+                    )
+                    fetchSpecs()
+                }
+            } catch (error: any) {
+                const errorMsg = error?.response?.data?.msg || 'Failed to delete'
+                toast.push(<Notification title="Error" type="danger">{errorMsg}</Notification>, { placement: 'top-center' })
+            }
+        }
     }
 
     const onSubmit = async (values: any, { setSubmitting }: any) => {
-        if (!editingSpec) return
-        
-        const id = editingSpec._id || editingSpec.id
-        
-        if (!id) {
-            toast.push(
-                <Notification title="Error" type="danger">
-                    Missing specification ID
-                </Notification>,
-                { placement: 'top-center' }
-            )
-            setSubmitting(false)
-            return
-        }
-
         const payload = {
             ...values,
             supportedAspects: typeof values.supportedAspects === 'string' ? values.supportedAspects.split(',').map((s: string) => s.trim()).filter((s: string) => s) : values.supportedAspects,
@@ -86,19 +102,39 @@ const PlatformSpecs = () => {
         }
 
         try {
-            const resp = await apiUpdatePlatformSpec(id, payload)
-            if (resp.data.ok || resp.status === 200) {
+            let resp;
+            if (isCreating) {
+                resp = await apiCreatePlatformSpec(payload)
+            } else {
+                if (!editingSpec) return;
+                const id = editingSpec._id || editingSpec.id;
+                
+                if (!id) {
+                    toast.push(
+                        <Notification title="Error" type="danger">
+                            Missing specification ID
+                        </Notification>,
+                        { placement: 'top-center' }
+                    )
+                    setSubmitting(false)
+                    return
+                }
+                resp = await apiUpdatePlatformSpec(id, payload)
+            }
+
+            if (resp.data.ok || resp.status === 200 || resp.status === 201) {
                 toast.push(
                     <Notification title="Success" type="success">
-                        Platform updated successfully
+                        {isCreating ? 'Platform created successfully' : 'Platform updated successfully'}
                     </Notification>,
                     { placement: 'top-center' }
                 )
                 fetchSpecs()
                 onDialogClose()
             }
-        } catch (error) {
-            toast.push(<Notification title="Error" type="danger">Failed to update</Notification>, { placement: 'top-center' })
+        } catch (error: any) {
+            const errorMsg = error?.response?.data?.msg || 'Failed to save'
+            toast.push(<Notification title="Error" type="danger">{errorMsg}</Notification>, { placement: 'top-center' })
         }
         setSubmitting(false)
     }
@@ -107,15 +143,25 @@ const PlatformSpecs = () => {
         <div className="flex flex-col gap-4 p-4">
             <div className="flex items-center justify-between">
                 <h3 className="font-bold">Platform Specs</h3>
-                <Button 
-                    size="sm" 
-                    variant="twoTone" 
-                    icon={<HiOutlineRefresh />} 
-                    onClick={fetchSpecs} 
-                    loading={loading}
-                >
-                    Refresh
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button 
+                        size="sm" 
+                        variant="twoTone" 
+                        icon={<HiOutlineRefresh />} 
+                        onClick={fetchSpecs} 
+                        loading={loading}
+                    >
+                        Refresh
+                    </Button>
+                    <Button 
+                        size="sm" 
+                        variant="solid" 
+                        icon={<HiOutlinePlus />} 
+                        onClick={onAddClick} 
+                    >
+                        Create Spec
+                    </Button>
+                </div>
             </div>
 
             <Card className="border-none shadow-sm">
@@ -157,13 +203,21 @@ const PlatformSpecs = () => {
                                                 <span className="bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded">NO</span>
                                             )}
                                         </Td>
-                                        <Td className="text-right">
+                                        <Td className="text-right space-x-2">
                                             <Button
                                                 size="xs"
                                                 icon={<HiOutlinePencil />}
                                                 onClick={() => onEditClick(spec)}
                                             >
                                                 Edit
+                                            </Button>
+                                            <Button
+                                                size="xs"
+                                                className="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 border-red-200"
+                                                icon={<HiOutlineTrash />}
+                                                onClick={() => onDeleteClick(spec)}
+                                            >
+                                                Delete
                                             </Button>
                                         </Td>
                                     </Tr>
@@ -187,7 +241,7 @@ const PlatformSpecs = () => {
                 width={800}
             >
                 <div className="p-6 h-[85vh] flex flex-col overflow-hidden">
-                    <h5 className="mb-6">Edit Specifications: {editingSpec?.name}</h5>
+                    <h5 className="mb-6">{isCreating ? 'Create New Specification' : `Edit Specifications: ${editingSpec?.name}`}</h5>
                     
                     <Formik
                         initialValues={{
@@ -234,7 +288,7 @@ const PlatformSpecs = () => {
                                             <h6 className="text-xs font-bold uppercase text-blue-600 mb-4 tracking-wider">General Information</h6>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <FormItem label="Key (ID)" invalid={errors.key && touched.key} errorMessage={errors.key}>
-                                                    <Field name="key" component={Input} disabled />
+                                                    <Field name="key" component={Input} disabled={!isCreating} />
                                                 </FormItem>
                                                 <FormItem label="Name" invalid={errors.name && touched.name} errorMessage={errors.name}>
                                                     <Field name="name" component={Input} />
@@ -364,7 +418,7 @@ const PlatformSpecs = () => {
                                             loading={isSubmitting}
                                             className="bg-blue-600 hover:bg-blue-700"
                                         >
-                                            Update Specification
+                                            {isCreating ? 'Create Specification' : 'Update Specification'}
                                         </Button>
                                     </div>
                                 </FormContainer>
